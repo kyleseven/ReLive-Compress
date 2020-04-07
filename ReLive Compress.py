@@ -119,7 +119,7 @@ def main():
         filename = fname_list[i]
         timestamp = timestamp_data_list[i]
 
-        start_time = time.clock
+        start_time = time.clock()
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
               end='')
@@ -127,7 +127,7 @@ def main():
         change_file_creation_time(filename, timestamp)
         os.utime(filename, (timestamp, timestamp))
 
-        print("Success!")
+        print("Success! (took " + str(round(time.clock() - start_time, 2)) + " seconds)")
 
     print("Finished!")
     input("Press enter to exit...")
