@@ -51,7 +51,7 @@ def convert_sec_to_hhmmss(seconds):
     minutes = seconds // 60
     seconds %= 60
 
-    return "%d:%02d:%02d" % (hour, minutes, seconds)
+    return "%dhr %02dm %02ds" % (hour, minutes, seconds)
 
 
 # Compresses a file with ffmpeg and replaces it
@@ -86,42 +86,40 @@ def ffmpeg_check():
         sys.exit(-2)
 
 
-# This does the stuff!
-# Goes through the current working directory and modifies:
-#   - Creation time
-#   - Modification time
-#   - Access time
-# of mp4 and m4v files based on the date on the file name.
+# Main function
+# Goes through files matching *.mp4 and compresses them using ffmpeg
 def main():
-    os.chdir(VIDEO_PATH)
-    timestamp_data_list = []
+    timestamp_list = []
     fname_list = []
     total_time = 0
     files_failed = 0
 
+    os.chdir(VIDEO_PATH)
+
+    # Gather files and their timestamps
     for filename in os.listdir(os.getcwd()):
         if filename.endswith(".mp4"):
-            dateString = filename
+            date_str = filename
             if filename.startswith("Replay_"):
-                dateString = remove_prefix(filename, "Replay_")
+                date_str = remove_prefix(filename, "Replay_")
 
-            dateString = dateString.replace("-", ".")
-            dateString = dateString.replace("_", ".")
-            dateArr = dateString.split(".")
-            if len(dateArr) < 5:
+            date_str = date_str.replace("-", ".")
+            date_str = date_str.replace("_", ".")
+            date_arr = date_str.split(".")
+            if len(date_arr) < 5:
                 print("Skipped: " + filename + "(incorrect file name)")
                 continue
 
             # Pop unnecessary elements
-            while len(dateArr) > 5:
-                dateArr.pop()
+            while len(date_arr) > 5:
+                date_arr.pop()
 
             # Save date from date array
-            year = int(dateArr[0])
-            month = int(dateArr[1])
-            day = int(dateArr[2])
-            hour = int(dateArr[3])
-            minute = int(dateArr[4])
+            year = int(date_arr[0])
+            month = int(date_arr[1])
+            day = int(date_arr[2])
+            hour = int(date_arr[3])
+            minute = int(date_arr[4])
 
             local = pytz.timezone("America/Chicago")
             naive = datetime.datetime(year, month, day, hour, minute, random.randint(0, 59))
@@ -133,31 +131,32 @@ def main():
                 pass
             else:
                 fname_list.append(filename)
-                timestamp_data_list.append(timestamp)
+                timestamp_list.append(timestamp)
 
+    # Compress files
     for i in range(len(fname_list)):
         filename = fname_list[i]
-        timestamp = timestamp_data_list[i]
+        timestamp = timestamp_list[i]
 
         start_time = time.clock()
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
               end='')
 
+        compress_rc = compress_file(filename)
         run_time = time.clock() - start_time
         total_time += run_time
-
-        compress_rc = compress_file(filename)
 
         if compress_rc == 0:
             change_file_creation_time(filename, timestamp)
             os.utime(filename, (timestamp, timestamp))
-            print("Success! (took " + str(round(run_time)) + " seconds)")
+            print("Success! (took " + str(round(run_time)) + "s)")
         else:
             print("Failed. ffmpeg returned " + str(compress_rc))
             files_failed += 1
 
-    print("Finished! " + str(len(fname_list) - files_failed) + " files converted in " + convert_sec_to_hhmmss(total_time) + "!")
+    print("Finished! " + str(len(fname_list) - files_failed) + " files converted in " +
+          convert_sec_to_hhmmss(total_time) + "!")
     input("Press enter to exit...")
 
 
