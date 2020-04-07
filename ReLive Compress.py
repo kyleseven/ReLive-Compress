@@ -44,6 +44,16 @@ def remove_prefix(text, prefix):
     return text
 
 
+def convert_sec_to_hhmmss(seconds):
+    seconds = seconds % (24 * 3600)
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+
+    return "%d:%02d:%02d" % (hour, minutes, seconds)
+
+
 # Compresses a file with ffmpeg and replaces it
 def compress_file(fname):
     temp_output_fname = fname.rstrip(".mp4") + "_temp_out.mp4"
@@ -78,6 +88,7 @@ def main():
     os.chdir(VIDEO_PATH)
     timestamp_data_list = []
     fname_list = []
+    total_time = 0
 
     for filename in os.listdir(os.getcwd()):
         if filename.endswith(".mp4"):
@@ -127,9 +138,11 @@ def main():
         change_file_creation_time(filename, timestamp)
         os.utime(filename, (timestamp, timestamp))
 
-        print("Success! (took " + str(round(time.clock() - start_time, 2)) + " seconds)")
+        run_time = time.clock() - start_time
+        total_time += run_time
+        print("Success! (took " + str(round(run_time)) + " seconds)")
 
-    print("Finished!")
+    print("Finished! " + str(len(fname_list)) + " files converted in " + convert_sec_to_hhmmss(total_time) + "!")
     input("Press enter to exit...")
 
 
