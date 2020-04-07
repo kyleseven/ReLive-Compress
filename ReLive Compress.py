@@ -8,6 +8,8 @@ import calendar
 import pytz
 import random
 import subprocess
+import shutil
+import sys
 
 # Global Var - Last Compress datetime
 LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 2)
@@ -51,8 +53,16 @@ def compress_file(fname):
 
 def os_check():
     if os.name != 'nt':
-        print("This program is not supported on non-Windows operating systems.")
-        os._exit(0)
+        print("ERROR: This program is not supported on non-Windows operating systems.")
+        sys.exit(-1)
+
+
+def ffmpeg_check():
+    if shutil.which("ffmpeg") is None:
+        print("ERROR: ffmpeg was not detected.")
+        print("       Is it installed?")
+        print("       If it is, make sure to add it to your PATH")
+        sys.exit(-2)
 
 
 # This does the stuff!
@@ -146,4 +156,5 @@ def main():
 
 if __name__ == "__main__":
     os_check()
+    ffmpeg_check()
     main()
