@@ -12,7 +12,7 @@ import pywintypes
 import win32con
 import win32file
 
-# Global Var - Last Compress datetime
+# Global Vars
 LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 3, 0)
 VIDEO_PATH = r"C:\Users\kyles\Videos\Radeon ReLive"
 TIMEZONE = "America/Chicago"
