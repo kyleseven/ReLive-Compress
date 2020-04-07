@@ -18,6 +18,7 @@ VIDEO_PATH = r"C:\Users\kyles\Videos\Radeon ReLive"
 
 
 # Changes file creation time (WINDOWS ONLY)
+# From: https://stackoverflow.com/questions/4996405/how-do-i-change-the-file-creation-date-of-a-windows-file
 def change_file_creation_time(fname, newtime):
     wintime = pywintypes.Time(newtime)
     winfile = win32file.CreateFile(
@@ -135,21 +136,19 @@ def main():
 
     # Compress files
     for i in range(len(fname_list)):
-        filename = fname_list[i]
-        timestamp = timestamp_list[i]
-
         start_time = time.clock()
-        # Compress then modify creation, modify, and access date of file
-        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
-              end='')
 
-        compress_rc = compress_file(filename)
+        # Compress then modify creation, modify, and access date of file
+        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + fname_list[i] + "... ",
+              end='')
+        compress_rc = compress_file(fname_list[i])
+
         run_time = time.clock() - start_time
         total_time += run_time
 
         if compress_rc == 0:
-            change_file_creation_time(filename, timestamp)
-            os.utime(filename, (timestamp, timestamp))
+            change_file_creation_time(fname_list[i], timestamp_list[i])
+            os.utime(fname_list[i], (timestamp_list[i], timestamp_list[i]))
             print("Success! (took " + str(round(run_time)) + "s)")
         else:
             print("Failed. ffmpeg returned " + str(compress_rc))
