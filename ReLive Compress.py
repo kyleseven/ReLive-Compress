@@ -12,7 +12,7 @@ import shutil
 import sys
 
 # Global Var - Last Compress datetime
-LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 2)
+LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 3, 0)
 VIDEO_PATH = r"C:\Users\kyles\Videos\Radeon ReLive"
 
 
@@ -45,10 +45,12 @@ def remove_prefix(text, prefix):
 
 # Compresses a file with ffmpeg and replaces it
 def compress_file(fname):
-    subprocess.run("ffmpeg -i \"" + fname + "\" -vcodec libx264 -map 0 -metadata creation_time=\"\" out.mp4",
+    temp_output_fname = fname.rstrip(".mp4") + "_temp_out.mp4"
+    subprocess.run("ffmpeg -i \"" + fname + "\" -vcodec libx264 -map 0 -metadata creation_time=\"\" " +
+                   temp_output_fname,
                    capture_output=True, shell=True)
     os.remove(fname)
-    os.rename("out.mp4", fname)
+    os.rename(temp_output_fname, fname)
 
 
 def os_check():
