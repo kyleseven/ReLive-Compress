@@ -57,11 +57,19 @@ def convert_sec_to_hhmmss(seconds):
 # Compresses a file with ffmpeg and replaces it
 def compress_file(fname):
     temp_output_fname = fname.rstrip(".mp4") + "_temp_out.mp4"
-    subprocess.run("ffmpeg -i \"" + fname + "\" -vcodec libx264 -map 0 -metadata creation_time=\"\" " +
-                   temp_output_fname,
-                   capture_output=True, shell=True)
+
+    result = subprocess.run("ffmpeg -i \"" + fname + "\" -vcodec libx264 -map 0 -metadata creation_time=\"\" " +
+                            temp_output_fname,
+                            capture_output=True, shell=True)
+
+    if result.returncode != 0:
+        if os.path.exists(temp_output_fname):
+            os.remove(temp_output_fname)
+        return result.returncode
+
     os.remove(fname)
     os.rename(temp_output_fname, fname)
+    return 0
 
 
 def os_check():
@@ -89,6 +97,7 @@ def main():
     timestamp_data_list = []
     fname_list = []
     total_time = 0
+    files_failed = 0
 
     for filename in os.listdir(os.getcwd()):
         if filename.endswith(".mp4"):
@@ -134,15 +143,21 @@ def main():
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
               end='')
-        compress_file(filename)
-        change_file_creation_time(filename, timestamp)
-        os.utime(filename, (timestamp, timestamp))
 
         run_time = time.clock() - start_time
         total_time += run_time
-        print("Success! (took " + str(round(run_time)) + " seconds)")
 
-    print("Finished! " + str(len(fname_list)) + " files converted in " + convert_sec_to_hhmmss(total_time) + "!")
+        compress_rc = compress_file(filename)
+
+        if compress_rc == 0:
+            change_file_creation_time(filename, timestamp)
+            os.utime(filename, (timestamp, timestamp))
+            print("Success! (took " + str(round(run_time)) + " seconds)")
+        else:
+            print("Failed. ffmpeg returned " + str(compress_rc))
+            files_failed += 1
+
+    print("Finished! " + str(len(fname_list) - files_failed) + " files converted in " + convert_sec_to_hhmmss(total_time) + "!")
     input("Press enter to exit...")
 
 
