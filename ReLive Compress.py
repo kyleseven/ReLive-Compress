@@ -15,6 +15,7 @@ import win32file
 # Global Var - Last Compress datetime
 LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 3, 0)
 VIDEO_PATH = r"C:\Users\kyles\Videos\Radeon ReLive"
+TIMEZONE = "America/Chicago"
 
 
 # Changes file creation time (WINDOWS ONLY)
@@ -122,7 +123,7 @@ def main():
             hour = int(date_arr[3])
             minute = int(date_arr[4])
 
-            local = pytz.timezone("America/Chicago")
+            local = pytz.timezone(TIMEZONE)
             naive = datetime.datetime(year, month, day, hour, minute, random.randint(0, 59))
             local_dt = local.localize(naive, is_dst=is_dst(naive, local))
             utc_dt = local_dt.astimezone(pytz.utc)
