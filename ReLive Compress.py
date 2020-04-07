@@ -75,38 +75,8 @@ def ffmpeg_check():
 # of mp4 and m4v files based on the date on the file name.
 def main():
     os.chdir(VIDEO_PATH)
-    number_of_files = 0
-    current_file = 0
-
-    for filename in os.listdir(os.getcwd()):
-        dateString = filename
-        if filename.startswith("Replay_"):
-            dateString = remove_prefix(filename, "Replay_")
-
-        dateString = dateString.replace("-", ".")
-        dateString = dateString.replace("_", ".")
-        dateArr = dateString.split(".")
-        if len(dateArr) < 5:
-            print("Skipped: " + filename + "(incorrect file name)")
-            continue
-
-        # Pop unnecessary elements
-        while len(dateArr) > 5:
-            dateArr.pop()
-
-        # Save date from date array
-        year = int(dateArr[0])
-        month = int(dateArr[1])
-        day = int(dateArr[2])
-        hour = int(dateArr[3])
-        minute = int(dateArr[4])
-
-        naive = datetime.datetime(year, month, day, hour, minute, random.randint(0, 59))
-
-        if naive < LAST_COMPRESS:
-            pass
-        else:
-            number_of_files += 1
+    timestamp_data_list = []
+    fname_list = []
 
     for filename in os.listdir(os.getcwd()):
         if filename.endswith(".mp4"):
@@ -118,6 +88,7 @@ def main():
             dateString = dateString.replace("_", ".")
             dateArr = dateString.split(".")
             if len(dateArr) < 5:
+                print("Skipped: " + filename + "(incorrect file name)")
                 continue
 
             # Pop unnecessary elements
@@ -131,7 +102,6 @@ def main():
             hour = int(dateArr[3])
             minute = int(dateArr[4])
 
-            # Convert US Central timezone to UTC and save timestamp
             local = pytz.timezone("America/Chicago")
             naive = datetime.datetime(year, month, day, hour, minute, random.randint(0, 59))
             local_dt = local.localize(naive, is_dst=is_dst(naive, local))
@@ -139,18 +109,23 @@ def main():
             timestamp = calendar.timegm(utc_dt.timetuple())
 
             if naive < LAST_COMPRESS:
-                continue
+                pass
+            else:
+                fname_list.append(filename)
+                timestamp_data_list.append(timestamp)
 
-            # Compress then modify creation, modify, and access date of file
-            print("Compressing " + str(current_file + 1) + " out of " + str(number_of_files) + ": " + filename + "... ",
-                  end='')
-            compress_file(filename)
-            change_file_creation_time(filename, timestamp)
-            os.utime(filename, (timestamp, timestamp))
+    for i in range(len(fname_list)):
+        filename = fname_list[i]
+        timestamp = timestamp_data_list[i]
 
-            current_file += 1
+        # Compress then modify creation, modify, and access date of file
+        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
+              end='')
+        compress_file(filename)
+        change_file_creation_time(filename, timestamp)
+        os.utime(filename, (timestamp, timestamp))
 
-            print("Success!")
+        print("Success!")
 
     print("Finished!")
     input("Press enter to exit...")
