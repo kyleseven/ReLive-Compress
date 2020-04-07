@@ -1,15 +1,16 @@
+import calendar
+import datetime
 import os
+import random
+import shutil
+import subprocess
+import sys
+import time
 
+import pytz
 import pywintypes
 import win32con
 import win32file
-import datetime
-import calendar
-import pytz
-import random
-import subprocess
-import shutil
-import sys
 
 # Global Var - Last Compress datetime
 LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 3, 0)
@@ -118,6 +119,7 @@ def main():
         filename = fname_list[i]
         timestamp = timestamp_data_list[i]
 
+        start_time = time.clock
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
               end='')
