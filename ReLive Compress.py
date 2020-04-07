@@ -49,6 +49,12 @@ def compress_file(fname):
     os.rename("out.mp4", fname)
 
 
+def os_check():
+    if os.name != 'nt':
+        print("This program is not supported on non-Windows operating systems.")
+        os._exit(0)
+
+
 # This does the stuff!
 # Goes through the current working directory and modifies:
 #   - Creation time
@@ -91,7 +97,7 @@ def main():
             number_of_files += 1
 
     for filename in os.listdir(os.getcwd()):
-        if filename.endswith(".m4v") or filename.endswith(".mp4"):
+        if filename.endswith(".mp4"):
             dateString = filename
             if filename.startswith("Replay_"):
                 dateString = remove_prefix(filename, "Replay_")
@@ -139,4 +145,5 @@ def main():
 
 
 if __name__ == "__main__":
+    os_check()
     main()
