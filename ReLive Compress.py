@@ -126,12 +126,12 @@ def main():
             os.utime(fname_list[i], (timestamp_list[i], timestamp_list[i]))
             print("Success! (took " + str(run_time) + "s)")
         else:
-            print("Failed. ffmpeg returned " + str(compress_rc))
+            print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
             files_failed += 1
 
-    print("Finished! " + str(len(fname_list) - files_failed) + " files converted in " +
+    print("Finished! " + str(len(fname_list) - files_failed) + " files were converted in " +
           convert_sec_to_hhmmss(total_time) + "!")
-    input("Press enter to exit...")
+    input("Press [ENTER] to exit...")
 
 
 if __name__ == "__main__":
