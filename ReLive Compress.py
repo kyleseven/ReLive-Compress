@@ -44,13 +44,22 @@ def remove_prefix(text, prefix):
 
 # Converts seconds to formatted hh mm ss string
 def convert_sec_to_hhmmss(seconds):
-    seconds = seconds % (24 * 3600)
-    hour = seconds // 3600
-    seconds %= 3600
-    minutes = seconds // 60
-    seconds %= 60
+    time_str = ""
 
-    return "%dhr %02dm %02ds" % (hour, minutes, seconds)
+    if seconds >= 3600:
+        hours = int(seconds // 3600)
+        time_str += str(hours) + "h "
+        seconds -= hours
+
+    if seconds >= 60:
+        minutes = int(seconds // 60)
+        time_str += str(minutes) + "m "
+        seconds -= minutes
+
+    if seconds > 0:
+        time_str += str(seconds) + "s "
+
+    return time_str
 
 
 # Compresses a file with ffmpeg and replaces it
