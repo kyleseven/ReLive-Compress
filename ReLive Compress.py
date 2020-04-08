@@ -68,7 +68,7 @@ def compress_file(fname):
 
     os.remove(fname)
     os.rename(temp_output_fname, fname)
-    return 0
+    return result.returncode
 
 
 # Checks to see if Windows is being used
@@ -118,13 +118,13 @@ def main():
               end='')
         compress_rc = compress_file(fname_list[i])
 
-        run_time = time.perf_counter() - start_time
+        run_time = round(time.perf_counter() - start_time)
         total_time += run_time
 
         if compress_rc == 0:
             change_file_creation_time(fname_list[i], timestamp_list[i])
             os.utime(fname_list[i], (timestamp_list[i], timestamp_list[i]))
-            print("Success! (took " + str(round(run_time)) + "s)")
+            print("Success! (took " + str(run_time) + "s)")
         else:
             print("Failed. ffmpeg returned " + str(compress_rc))
             files_failed += 1
