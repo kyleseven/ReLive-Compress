@@ -42,6 +42,7 @@ def remove_prefix(text, prefix):
     return text
 
 
+# Converts seconds to formatted hh mm ss string
 def convert_sec_to_hhmmss(seconds):
     seconds = seconds % (24 * 3600)
     hour = seconds // 3600
@@ -70,12 +71,14 @@ def compress_file(fname):
     return 0
 
 
+# Checks to see if Windows is being used
 def os_check():
     if os.name != 'nt':
         print("ERROR: This program is not supported on non-Windows operating systems.")
         sys.exit(-1)
 
 
+# Checks to see if ffmpeg is installed
 def ffmpeg_check():
     if shutil.which("ffmpeg") is None:
         print("ERROR: ffmpeg was not detected.")
