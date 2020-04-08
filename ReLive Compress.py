@@ -110,20 +110,20 @@ def main():
                 timestamp_list.append(int(timestamp))
 
     # Compress files
-    for i in range(len(fname_list)):
+    for i, (fname, timestamp) in enumerate(zip(fname_list, timestamp_list)):
         start_time = time.perf_counter()
 
         # Compress then modify creation, modify, and access date of file
-        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + fname_list[i] + "... ",
+        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + fname + "... ",
               end='')
-        compress_rc = compress_file(fname_list[i])
+        compress_rc = compress_file(fname)
 
         run_time = round(time.perf_counter() - start_time)
         total_time += run_time
 
         if compress_rc == 0:
-            change_file_creation_time(fname_list[i], timestamp_list[i])
-            os.utime(fname_list[i], (timestamp_list[i], timestamp_list[i]))
+            change_file_creation_time(fname, timestamp)
+            os.utime(fname, (timestamp, timestamp))
             print("Success! (took " + str(run_time) + "s)")
         else:
             print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
