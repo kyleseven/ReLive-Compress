@@ -29,19 +29,6 @@ def change_file_creation_time(fname, newtime):
     winfile.close()
 
 
-# Checks if a datetime is DST or not
-def is_dst(dt, tz):
-    aware_dt = tz.localize(dt)
-    return aware_dt.dst() != datetime.timedelta(0, 0)
-
-
-# Removes a specified prefix from a string
-def remove_prefix(text, prefix):
-    if text.startswith(prefix):
-        return text[len(prefix):]
-    return text
-
-
 # Converts seconds to formatted hh mm ss string
 def convert_sec_to_hhmmss(seconds):
     time_str = ""
