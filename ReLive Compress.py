@@ -137,20 +137,20 @@ def main():
 
     # Compress files
     for i in range(len(fname_list)):
-        start_time = time.clock()
+        start_time = time.process_time()
 
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + fname_list[i] + "... ",
               end='')
         compress_rc = compress_file(fname_list[i])
 
-        run_time = time.clock() - start_time
+        run_time = time.process_time() - start_time
         total_time += run_time
 
         if compress_rc == 0:
             change_file_creation_time(fname_list[i], timestamp_list[i])
             os.utime(fname_list[i], (timestamp_list[i], timestamp_list[i]))
-            print("Success! (took " + str(round(run_time)) + "s)")
+            print("Success! (took " + str(round(run_time)) + " s)")
         else:
             print("Failed. ffmpeg returned " + str(compress_rc))
             files_failed += 1
