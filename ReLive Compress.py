@@ -112,14 +112,14 @@ def main():
 
     # Compress files
     for i in range(len(fname_list)):
-        start_time = time.process_time()
+        start_time = time.perf_counter()
 
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + fname_list[i] + "... ",
               end='')
         compress_rc = compress_file(fname_list[i])
 
-        run_time = time.process_time() - start_time
+        run_time = time.perf_counter() - start_time
         total_time += run_time
 
         if compress_rc == 0:
