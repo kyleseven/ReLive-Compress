@@ -9,12 +9,6 @@ import pywintypes
 import win32con
 import win32file
 
-# Global Vars
-# The time of the last video you compressed so that the program doesn't re-compress it.
-# If this is the first time running this program, set this to a date before your earliest video.
-# Modify the numeric values in the parenthesis.
-# Key: datetime.datetime(year, month, day, hour, minute, second)
-LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 3, 0)
 # The FULL path to your game replays
 VIDEO_PATH = r"C:\Users\kyles\Videos\Radeon ReLive"
 
@@ -86,23 +80,60 @@ def ffmpeg_check():
         sys.exit(-2)
 
 
+def update_last_compress(timestamp):
+    # Opening with "a+" here because Windows doesn't like it when I open a hidden file with "w"
+    lc_file = open(".lastcompress", "a+")
+    lc_file.truncate(0)
+    lc_file.write(str(int(timestamp)))
+    lc_file.close()
+    subprocess.run(["attrib", "+H", ".lastcompress"])
+
+
+def get_last_compress():
+    if not os.path.exists(".lastcompress"):
+        print("This is the first time you're running this program.")
+        print("All mp4 files in " + os.getcwd() + " will be compressed and OVERWRITTEN.")
+        while True:
+            print("Continue? [y/n] ", end="")
+            choice = input()
+            if choice.casefold() == "y".casefold():
+                break
+            elif choice.casefold() == "n".casefold():
+                print("Exiting...")
+                sys.exit(1)
+            else:
+                print("That is not a valid option. Try again")
+                continue
+        return 0
+
+    lc_file = open(".lastcompress", "r")
+    timestamp = lc_file.readline()
+    lc_file.close()
+
+    if not timestamp.isnumeric():
+        print("Corrupted .lastcompress file! Remove it and restart the program.")
+        sys.exit(-4)
+    else:
+        return int(timestamp)
+
+
 # Main function
 # Goes through files matching *.mp4 and compresses them using ffmpeg
 def main():
+    os.chdir(VIDEO_PATH)
+
     timestamp_list = []
     fname_list = []
     total_time = 0
     files_failed = 0
-
-    os.chdir(VIDEO_PATH)
+    last_compress = get_last_compress()
 
     # Gather files and their timestamps
     for filename in os.listdir(os.getcwd()):
         if filename.endswith(".mp4"):
             timestamp = os.path.getmtime(filename)
-            file_time = datetime.datetime.fromtimestamp(timestamp)
 
-            if file_time < LAST_COMPRESS:
+            if timestamp <= last_compress:
                 pass
             else:
                 fname_list.append(filename)
@@ -128,8 +159,13 @@ def main():
             print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
             files_failed += 1
 
-    print("Finished! " + str(len(fname_list) - files_failed) + " files were converted in " +
-          convert_sec_to_hhmmss(total_time) + "!")
+    if len(fname_list) != 0:
+        update_last_compress(max(timestamp_list))
+        print("Finished! " + str(len(fname_list) - files_failed) + " files were converted in " +
+              convert_sec_to_hhmmss(total_time) + "!")
+    else:
+        print("No files needed to be compressed.")
+
     input("Press [ENTER] to exit...")
 
 
