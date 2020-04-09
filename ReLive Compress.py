@@ -110,7 +110,7 @@ def get_last_compress():
         return 0
 
     lc_file = open(".lastcompress", "r")
-    timestamp = lc_file.readline()
+    timestamp = lc_file.readline().rstrip()
     lc_file.close()
 
     if not timestamp.isnumeric():
