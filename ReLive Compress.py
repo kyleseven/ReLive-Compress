@@ -119,7 +119,9 @@ def get_last_compress():
 # Main function
 # Goes through files matching *.mp4 and compresses them using ffmpeg
 def main():
+    os_check()
     os.chdir(VIDEO_PATH)
+    ffmpeg_check()
 
     timestamp_list = []
     fname_list = []
@@ -169,6 +171,4 @@ def main():
 
 
 if __name__ == "__main__":
-    os_check()
-    ffmpeg_check()
     main()
