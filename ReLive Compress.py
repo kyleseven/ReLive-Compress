@@ -9,18 +9,18 @@ import win32con
 import win32file
 
 
-def change_file_creation_time(fname, newtime):
+def change_file_creation_time(filename, new_time):
     """
     Changes file creation time (for WINDOWS ONLY)
     Taken from: https://stackoverflow.com/questions/4996405/how-do-i-change-the-file-creation-date-of-a-windows-file
 
-    :param fname: the name of the file
-    :param newtime: the timestamp to apply to the file
+    :param filename: the name of the file
+    :param new_time: the timestamp to apply to the file
     :return:
     """
-    wintime = pywintypes.Time(newtime)
+    wintime = pywintypes.Time(new_time)
     winfile = win32file.CreateFile(
-        fname, win32con.GENERIC_WRITE,
+        filename, win32con.GENERIC_WRITE,
         win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
         None, win32con.OPEN_EXISTING,
         win32con.FILE_ATTRIBUTE_NORMAL, None)
@@ -56,16 +56,16 @@ def convert_sec_to_hhmmss(seconds):
     return time_str.rstrip()
 
 
-def compress_file(fname):
+def compress_file(filename):
     """
     Compresses a file with ffmpeg and replaces the old one.
 
-    :param fname: name of the file
+    :param filename: name of the file
     :return: return code of ffmpeg run
     """
-    temp_output_fname = fname.rstrip(".mp4") + "_temp_out.mp4"
+    temp_output_fname = filename.rstrip(".mp4") + "_temp_out.mp4"
 
-    result = subprocess.run(["ffmpeg", "-i", fname, "-vcodec", "libx264", "-map", "0", "-metadata",
+    result = subprocess.run(["ffmpeg", "-i", filename, "-vcodec", "libx264", "-map", "0", "-metadata",
                              "creation_time=\"\"", temp_output_fname], capture_output=True)
 
     if result.returncode != 0:
@@ -73,8 +73,8 @@ def compress_file(fname):
             os.remove(temp_output_fname)
         return result.returncode
 
-    os.remove(fname)
-    os.rename(temp_output_fname, fname)
+    os.remove(filename)
+    os.rename(temp_output_fname, filename)
     return result.returncode
 
 
@@ -204,20 +204,20 @@ def main():
                 timestamp_list.append(int(timestamp))
 
     # Compress files
-    for i, (fname, timestamp) in enumerate(zip(fname_list, timestamp_list)):
+    for i, (filename, timestamp) in enumerate(zip(fname_list, timestamp_list)):
         start_time = time.perf_counter()
 
         # Compress then modify creation, modify, and access date of file
-        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + fname + "... ",
+        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
               end='')
-        compress_rc = compress_file(fname)
+        compress_rc = compress_file(filename)
 
         run_time = round(time.perf_counter() - start_time)
         total_time += run_time
 
         if compress_rc == 0:
-            change_file_creation_time(fname, timestamp)
-            os.utime(fname, (timestamp, timestamp))
+            change_file_creation_time(filename, timestamp)
+            os.utime(filename, (timestamp, timestamp))
             print("Success! (took " + str(run_time) + "s)")
         else:
             print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
