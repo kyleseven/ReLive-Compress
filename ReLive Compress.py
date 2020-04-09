@@ -12,6 +12,7 @@ import win32file
 def change_file_creation_time(filename, new_time):
     """
     Changes file creation time (for WINDOWS ONLY)
+
     Taken from: https://stackoverflow.com/questions/4996405/how-do-i-change-the-file-creation-date-of-a-windows-file
 
     :param filename: the name of the file
@@ -180,6 +181,7 @@ def main():
     Main function
 
     Goes through all files matching *.mp4 and compresses them using ffmpeg.
+
     :return:
     """
     os_check()
