@@ -9,9 +9,15 @@ import win32con
 import win32file
 
 
-# Changes file creation time (WINDOWS ONLY)
-# From: https://stackoverflow.com/questions/4996405/how-do-i-change-the-file-creation-date-of-a-windows-file
 def change_file_creation_time(fname, newtime):
+    """
+    Changes file creation time (for WINDOWS ONLY)
+    Taken from: https://stackoverflow.com/questions/4996405/how-do-i-change-the-file-creation-date-of-a-windows-file
+
+    :param fname: the name of the file
+    :param newtime: the timestamp to apply to the file
+    :return:
+    """
     wintime = pywintypes.Time(newtime)
     winfile = win32file.CreateFile(
         fname, win32con.GENERIC_WRITE,
@@ -24,8 +30,14 @@ def change_file_creation_time(fname, newtime):
     winfile.close()
 
 
-# Converts seconds to a string that contains hours, minutes, seconds. A unit of time is not output if it is not needed.
 def convert_sec_to_hhmmss(seconds):
+    """
+    Converts seconds to a string that contains hours, minutes, seconds.
+    A unit of time is not output if it is not needed.
+
+    :param seconds:
+    :return: a string that represents hours, minutes, and seconds
+    """
     time_str = ""
 
     if seconds >= 3600:
@@ -44,8 +56,13 @@ def convert_sec_to_hhmmss(seconds):
     return time_str.rstrip()
 
 
-# Compresses a file with ffmpeg and replaces it
 def compress_file(fname):
+    """
+    Compresses a file with ffmpeg and replaces the old one.
+
+    :param fname: name of the file
+    :return: return code of ffmpeg run
+    """
     temp_output_fname = fname.rstrip(".mp4") + "_temp_out.mp4"
 
     result = subprocess.run(["ffmpeg", "-i", fname, "-vcodec", "libx264", "-map", "0", "-metadata",
@@ -61,15 +78,23 @@ def compress_file(fname):
     return result.returncode
 
 
-# Checks to see if Windows is being used
 def os_check():
+    """
+    Checks to see if Windows is being used and exits if it is not.
+
+    :return: None
+    """
     if os.name != 'nt':
         print("ERROR: This program is not supported on non-Windows operating systems.")
         sys.exit(-1)
 
 
-# Checks to see if ffmpeg is installed
 def ffmpeg_check():
+    """
+    Checks if ffmpeg is installed on the system and exits if it is not.
+
+    :return: None
+    """
     if shutil.which("ffmpeg") is None:
         print("ERROR: ffmpeg was not detected. Is it installed? Is it in your PATH?")
         print("If you don't have ffmpeg, you can download it at https://www.ffmpeg.org/download.html and install it "
@@ -82,8 +107,13 @@ def ffmpeg_check():
         sys.exit(-2)
 
 
-# Updates the .lastcompress file with the specified timestamp.
 def update_last_compress(timestamp):
+    """
+    Updates the .lastcompress file with the specified timestamp.
+
+    :param timestamp: the timestamp to be written to the .lastcompress file
+    :return: None
+    """
     # Opening with "a+" here because Windows doesn't like it when I open a hidden file with "w"
     lc_file = open(".lastcompress", "a+")
     lc_file.truncate(0)
@@ -92,8 +122,12 @@ def update_last_compress(timestamp):
     subprocess.run(["attrib", "+H", ".lastcompress"])
 
 
-# Gets the last compress timestamp from the .lastcompress file or returns 0 if it does not exist.
 def get_last_compress():
+    """
+    Gets the last compress timestamp from the .lastcompress file
+
+    :return: the .lastcompress timestamp or 0 if not found
+    """
     if not os.path.exists(".lastcompress"):
         print("A .lastcompress file was not detected. Is this your first time using this program?")
         print("All mp4 files in " + os.getcwd() + " will be compressed and OVERWRITTEN.")
@@ -124,6 +158,11 @@ def get_last_compress():
 
 # Gets the path of the video replays folder
 def get_video_path():
+    """
+    Gets the path of the video replays folder and asks the user if it is not found.
+
+    :return: path to video replays
+    """
     home = os.path.expanduser("~")
     path = home + "\\Videos\\Radeon ReLive"
 
@@ -136,9 +175,13 @@ def get_video_path():
     return path
 
 
-# Main function
-# Goes through files matching *.mp4 and compresses them using ffmpeg
 def main():
+    """
+    Main function
+
+    Goes through all files matching *.mp4 and compresses them using ffmpeg.
+    :return:
+    """
     os_check()
     os.chdir(get_video_path())
     ffmpeg_check()
