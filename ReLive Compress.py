@@ -150,7 +150,7 @@ def main():
     # Gather files and their timestamps
     for filename in os.listdir(os.getcwd()):
         if filename.endswith(".mp4"):
-            timestamp = os.path.getmtime(filename)
+            timestamp = int(os.path.getmtime(filename))
 
             if timestamp <= last_compress:
                 pass
