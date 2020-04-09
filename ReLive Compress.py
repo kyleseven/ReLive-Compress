@@ -10,7 +10,12 @@ import win32con
 import win32file
 
 # Global Vars
+# The time of the last video you compressed so that the program doesn't re-compress it.
+# If this is the first time running this program, set this to a date before your earliest video.
+# Modify the numeric values in the parenthesis.
+# Key: datetime.datetime(year, month, day, hour, minute, second)
 LAST_COMPRESS = datetime.datetime(2020, 4, 7, 0, 3, 0)
+# The FULL path to your game replays
 VIDEO_PATH = r"C:\Users\kyles\Videos\Radeon ReLive"
 
 
