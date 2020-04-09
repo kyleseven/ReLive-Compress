@@ -31,12 +31,12 @@ def convert_sec_to_hhmmss(seconds):
     if seconds >= 3600:
         hours = int(seconds // 3600)
         time_str += str(hours) + "h "
-        seconds -= hours
+        seconds -= hours * 3600
 
     if seconds >= 60:
         minutes = int(seconds // 60)
         time_str += str(minutes) + "m "
-        seconds -= minutes
+        seconds -= minutes * 60
 
     if seconds > 0:
         time_str += str(seconds) + "s "
