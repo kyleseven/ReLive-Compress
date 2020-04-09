@@ -8,9 +8,6 @@ import pywintypes
 import win32con
 import win32file
 
-# The FULL path to your game replays
-VIDEO_PATH = r"C:\Users\kyles\Videos\Radeon ReLive"
-
 
 # Changes file creation time (WINDOWS ONLY)
 # From: https://stackoverflow.com/questions/4996405/how-do-i-change-the-file-creation-date-of-a-windows-file
@@ -78,8 +75,8 @@ def ffmpeg_check():
               "one of two ways:")
         print("1. (Easier) Unzip and place the 3 ffmpeg exe files in the same folder as your videos. However, "
               "you will not be able to use ffmpeg outside this program.")
-        print("2. Unzip and place the 3 ffmpeg exe files in C:\\Program Files\\ffmpeg\\bin and add the directory to "
-              "your PATH.")
+        print("2. (Recommended) Unzip and place the 3 ffmpeg exe files in C:\\Program Files\\ffmpeg\\bin and add the "
+              "directory to your PATH.")
         input("Press [ENTER] to exit...")
         sys.exit(-2)
 
@@ -98,8 +95,7 @@ def get_last_compress():
         print("This is the first time you're running this program.")
         print("All mp4 files in " + os.getcwd() + " will be compressed and OVERWRITTEN.")
         while True:
-            print("Continue? [y/n] ", end="")
-            choice = input()
+            choice = input("Continue? [y/n] ")
             if choice.casefold() == "y".casefold():
                 break
             elif choice.casefold() == "n".casefold():
@@ -121,11 +117,24 @@ def get_last_compress():
         return int(timestamp)
 
 
+def get_video_path():
+    home = os.path.expanduser("~")
+    path = home + "\\Videos\\Radeon ReLive"
+
+    while not os.path.exists(path):
+        print("Not able to find a Radeon ReLive folder. Please specify it.")
+        path = input("Videos Folder: " + home)
+        if not os.path.exists(home):
+            print("That directory doesn't exist!")
+
+    return path
+
+
 # Main function
 # Goes through files matching *.mp4 and compresses them using ffmpeg
 def main():
     os_check()
-    os.chdir(VIDEO_PATH)
+    os.chdir(get_video_path())
     ffmpeg_check()
 
     timestamp_list = []
