@@ -24,6 +24,7 @@ def change_file_creation_time(fname, newtime):
     winfile.close()
 
 
+# Converts seconds to a string that contains hours, minutes, seconds. A unit of time is not output if it is not needed.
 def convert_sec_to_hhmmss(seconds):
     time_str = ""
 
@@ -81,6 +82,7 @@ def ffmpeg_check():
         sys.exit(-2)
 
 
+# Updates the .lastcompress file with the specified timestamp.
 def update_last_compress(timestamp):
     # Opening with "a+" here because Windows doesn't like it when I open a hidden file with "w"
     lc_file = open(".lastcompress", "a+")
@@ -90,6 +92,7 @@ def update_last_compress(timestamp):
     subprocess.run(["attrib", "+H", ".lastcompress"])
 
 
+# Gets the last compress timestamp from the .lastcompress file or returns 0 if it does not exist.
 def get_last_compress():
     if not os.path.exists(".lastcompress"):
         print("This is the first time you're running this program.")
@@ -117,6 +120,7 @@ def get_last_compress():
         return int(timestamp)
 
 
+# Gets the path of the video replays folder
 def get_video_path():
     home = os.path.expanduser("~")
     path = home + "\\Videos\\Radeon ReLive"
