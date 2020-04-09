@@ -52,9 +52,8 @@ def convert_sec_to_hhmmss(seconds):
 def compress_file(fname):
     temp_output_fname = fname.rstrip(".mp4") + "_temp_out.mp4"
 
-    result = subprocess.run("ffmpeg -i \"" + fname + "\" -vcodec libx264 -map 0 -metadata creation_time=\"\" " +
-                            temp_output_fname,
-                            capture_output=True, shell=True)
+    result = subprocess.run(["ffmpeg", "-i", fname, "-vcodec", "libx264", "-map", "0", "-metadata",
+                             "creation_time=\"\"", temp_output_fname], capture_output=True)
 
     if result.returncode != 0:
         if os.path.exists(temp_output_fname):
