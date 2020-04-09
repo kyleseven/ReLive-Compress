@@ -29,7 +29,6 @@ def change_file_creation_time(fname, newtime):
     winfile.close()
 
 
-# Converts seconds to formatted hh mm ss string
 def convert_sec_to_hhmmss(seconds):
     time_str = ""
 
@@ -46,7 +45,7 @@ def convert_sec_to_hhmmss(seconds):
     if seconds > 0:
         time_str += str(seconds) + "s "
 
-    return time_str
+    return time_str.rstrip()
 
 
 # Compresses a file with ffmpeg and replaces it
