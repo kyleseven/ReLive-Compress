@@ -95,8 +95,9 @@ def update_last_compress(timestamp):
 # Gets the last compress timestamp from the .lastcompress file or returns 0 if it does not exist.
 def get_last_compress():
     if not os.path.exists(".lastcompress"):
-        print("This is the first time you're running this program.")
+        print("A .lastcompress file was not detected. Is this your first time using this program?")
         print("All mp4 files in " + os.getcwd() + " will be compressed and OVERWRITTEN.")
+        print("Your CPU will likely be at 100% on all cores through the duration of this program.")
         while True:
             choice = input("Continue? [y/n] ")
             if choice.casefold() == "y".casefold():
@@ -108,14 +109,15 @@ def get_last_compress():
                 print("That is not a valid option. Try again")
                 continue
         return 0
-
-    lc_file = open(".lastcompress", "r")
-    timestamp = lc_file.readline().rstrip()
-    lc_file.close()
+    else:
+        lc_file = open(".lastcompress", "r")
+        timestamp = lc_file.readline().rstrip()
+        lc_file.close()
 
     if not timestamp.isnumeric():
-        print("Corrupted .lastcompress file! Remove it and restart the program.")
-        sys.exit(-4)
+        print("Corrupted .lastcompress file! Removing it...")
+        os.remove(".lastcompress")
+        get_last_compress()
     else:
         return int(timestamp)
 
