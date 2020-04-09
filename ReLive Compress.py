@@ -73,9 +73,14 @@ def os_check():
 # Checks to see if ffmpeg is installed
 def ffmpeg_check():
     if shutil.which("ffmpeg") is None:
-        print("ERROR: ffmpeg was not detected.")
-        print("       Is it installed?")
-        print("       If it is, make sure to add it to your PATH")
+        print("ERROR: ffmpeg was not detected. Is it installed? Is it in your PATH?")
+        print("If you don't have ffmpeg, you can download it at https://www.ffmpeg.org/download.html and install it "
+              "one of two ways:")
+        print("1. (Easier) Unzip and place the 3 ffmpeg exe files in the same folder as your videos. However, "
+              "you will not be able to use ffmpeg outside this program.")
+        print("2. Unzip and place the 3 ffmpeg exe files in C:\\Program Files\\ffmpeg\\bin and add the directory to "
+              "your PATH.")
+        input("Press [ENTER] to exit...")
         sys.exit(-2)
 
 
