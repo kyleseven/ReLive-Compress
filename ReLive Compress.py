@@ -220,7 +220,7 @@ def main():
         if compress_rc == 0:
             change_file_creation_time(filename, timestamp)
             os.utime(filename, (timestamp, timestamp))
-            print("Success! (took " + str(run_time) + "s)")
+            print("Success! (took " + convert_sec_to_hhmmss(run_time))
         else:
             print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
             files_failed += 1
