@@ -227,7 +227,7 @@ def main():
 
     if len(fname_list) != 0:
         update_last_compress(max(timestamp_list))
-        print("Finished! " + str(len(fname_list) - files_failed) + " files were converted in " +
+        print("Finished! " + str(len(fname_list) - files_failed) + " files were compressed in " +
               convert_sec_to_hhmmss(total_time) + "!")
     else:
         print("No files needed to be compressed.")
