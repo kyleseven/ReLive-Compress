@@ -199,6 +199,8 @@ def main():
     timestamp_list = []
     fname_list = []
     total_time = 0
+    old_size_total = 0
+    new_size_total = 0
     files_failed = 0
     last_compress = get_last_compress()
 
@@ -216,7 +218,8 @@ def main():
     # Compress files
     for i, (filename, timestamp) in enumerate(zip(fname_list, timestamp_list)):
         start_time = time.perf_counter()
-        old_size = bytes_to_readable(os.path.getsize(filename))
+        old_size = os.path.getsize(filename)
+        old_size_total += old_size
 
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
@@ -225,12 +228,14 @@ def main():
 
         run_time = round(time.perf_counter() - start_time)
         total_time += run_time
-        new_size = bytes_to_readable(os.path.getsize(filename))
+        new_size = os.path.getsize(filename)
+        new_size_total += new_size
 
         if compress_rc == 0:
             change_file_creation_time(filename, timestamp)
             os.utime(filename, (timestamp, timestamp))
-            print("Success! (took " + convert_sec_to_hhmmss(run_time) + ") (" + old_size + " -> " + new_size + ")")
+            print("Success! (took " + convert_sec_to_hhmmss(run_time) + ") (" + bytes_to_readable(old_size) + " -> " +
+                  bytes_to_readable(new_size) + ")")
         else:
             print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
             files_failed += 1
@@ -238,7 +243,8 @@ def main():
     if len(fname_list) != 0:
         update_last_compress(max(timestamp_list))
         print("Finished! " + str(len(fname_list) - files_failed) + " files were compressed in " +
-              convert_sec_to_hhmmss(total_time) + "!")
+              convert_sec_to_hhmmss(total_time) + "! You reclaimed " +
+              bytes_to_readable(old_size_total - new_size_total) + " of disk space!")
     else:
         print("No files needed to be compressed.")
 
