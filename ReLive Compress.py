@@ -209,9 +209,7 @@ def main():
         if filename.endswith(".mp4"):
             timestamp = int(os.path.getmtime(filename))
 
-            if timestamp <= last_compress:
-                pass
-            else:
+            if timestamp > last_compress:
                 fname_list.append(filename)
                 timestamp_list.append(int(timestamp))
 
