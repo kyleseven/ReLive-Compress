@@ -58,6 +58,12 @@ def convert_sec_to_hhmmss(seconds):
 
 
 def bytes_to_readable(num_bytes):
+    """
+    Converts bytes to a human readable file size.
+
+    :param num_bytes: number of bytes to convert
+    :return: a human readable file size string
+    """
     for unit in [' B', ' KB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB']:
         if abs(num_bytes) < 1024.0:
             return "%3.1f%s" % (num_bytes, unit)
