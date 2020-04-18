@@ -57,6 +57,14 @@ def convert_sec_to_hhmmss(seconds):
     return time_str.rstrip()
 
 
+def bytes_to_readable(num_bytes):
+    for unit in [' B', ' KB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB']:
+        if abs(num_bytes) < 1024.0:
+            return "%3.1f%s" % (num_bytes, unit)
+        num_bytes /= 1024.0
+    return "%.1f%s" % (num_bytes, ' YB')
+
+
 def compress_file(filename):
     """
     Compresses a file with ffmpeg and replaces the old one.
@@ -208,6 +216,7 @@ def main():
     # Compress files
     for i, (filename, timestamp) in enumerate(zip(fname_list, timestamp_list)):
         start_time = time.perf_counter()
+        old_size = bytes_to_readable(os.path.getsize(filename))
 
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
@@ -216,11 +225,12 @@ def main():
 
         run_time = round(time.perf_counter() - start_time)
         total_time += run_time
+        new_size = bytes_to_readable(os.path.getsize(filename))
 
         if compress_rc == 0:
             change_file_creation_time(filename, timestamp)
             os.utime(filename, (timestamp, timestamp))
-            print("Success! (took " + convert_sec_to_hhmmss(run_time) + ")")
+            print("Success! (took " + convert_sec_to_hhmmss(run_time) + ") (" + old_size + " -> " + new_size + ")")
         else:
             print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
             files_failed += 1
