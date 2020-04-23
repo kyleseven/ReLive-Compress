@@ -184,7 +184,7 @@ def get_video_path():
     while not os.path.exists(path):
         print("Not able to find a Radeon ReLive folder. Please specify it.")
         path = input("Videos Folder: " + home)
-        if not os.path.exists(home):
+        if not os.path.exists(path):
             print("That directory doesn't exist!")
 
     return path
