@@ -227,7 +227,7 @@ def main():
 
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
-              end='')
+              end='', flush=True)
         compress_rc = compress_file(filename)
 
         run_time = round(time.perf_counter() - start_time)
@@ -239,9 +239,9 @@ def main():
             change_file_creation_time(filename, timestamp)
             os.utime(filename, (timestamp, timestamp))
             print("Success! (took " + convert_sec_to_hhmmss(run_time) + ") (" + bytes_to_readable(old_size) + " -> " +
-                  bytes_to_readable(new_size) + ")")
+                  bytes_to_readable(new_size) + ")", flush=True)
         else:
-            print("Failed. (ffmpeg returned " + str(compress_rc) + ")")
+            print("Failed. (ffmpeg returned " + str(compress_rc) + ")", flush=True)
             files_failed += 1
 
     if len(fname_list) != 0:
