@@ -9,7 +9,7 @@ import win32con
 import win32file
 
 
-def change_file_creation_time(filename, new_time):
+def change_file_creation_time(filename: str, new_time: int) -> None:
     """
     Changes file creation time (for WINDOWS ONLY)
 
@@ -31,7 +31,7 @@ def change_file_creation_time(filename, new_time):
     winfile.close()
 
 
-def convert_sec_to_hhmmss(seconds):
+def convert_sec_to_hhmmss(seconds: int) -> str:
     """
     Converts seconds to a string that contains hours, minutes, seconds.
     A unit of time is not output if it is not needed.
@@ -57,21 +57,21 @@ def convert_sec_to_hhmmss(seconds):
     return time_str.rstrip()
 
 
-def bytes_to_readable(num_bytes):
+def bytes_to_readable(num_bytes: float) -> str:
     """
     Converts bytes to a human readable file size.
 
     :param num_bytes: number of bytes to convert
     :return: a human readable file size string
     """
-    for unit in [' B', ' KB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB']:
+    for unit in [" B", " KB", " MB", " GB", " TB", " PB", " EB", " ZB"]:
         if abs(num_bytes) < 1024.0:
             return "%3.1f%s" % (num_bytes, unit)
         num_bytes /= 1024.0
-    return "%.1f%s" % (num_bytes, ' YB')
+    return "%.1f%s" % (num_bytes, " YB")
 
 
-def compress_file(filename):
+def compress_file(filename: str) -> int:
     """
     Compresses a file with ffmpeg and replaces the old one.
 
@@ -93,18 +93,18 @@ def compress_file(filename):
     return result.returncode
 
 
-def os_check():
+def os_check() -> None:
     """
     Checks to see if Windows is being used and exits if it is not.
 
     :return: None
     """
-    if os.name != 'nt':
+    if os.name != "nt":
         print("ERROR: This program is not supported on non-Windows operating systems.")
         sys.exit(-1)
 
 
-def ffmpeg_check():
+def ffmpeg_check() -> None:
     """
     Checks if ffmpeg is installed on the system and exits if it is not.
 
@@ -117,12 +117,13 @@ def ffmpeg_check():
         print("1. (Easier) Unzip and place the 3 ffmpeg exe files in the same folder as your videos. However, "
               "you will not be able to use ffmpeg outside this program.")
         print("2. (Recommended) Unzip and place the 3 ffmpeg exe files in C:\\Program Files\\ffmpeg\\bin and add the "
-              "directory to your PATH.")
+              "directory to your PATH. See: https://stackoverflow.com/questions/24219627/how-to-update-system-path-"
+              "variable-permanently-from-cmd")
         input("Press [ENTER] to exit...")
         sys.exit(-2)
 
 
-def update_last_compress(timestamp):
+def update_last_compress(timestamp: int) -> None:
     """
     Updates the .lastcompress file with the specified timestamp.
 
@@ -137,7 +138,7 @@ def update_last_compress(timestamp):
     subprocess.run(["attrib", "+H", ".lastcompress"])
 
 
-def get_last_compress():
+def get_last_compress() -> int:
     """
     Gets the last compress timestamp from the .lastcompress file
 
@@ -145,7 +146,8 @@ def get_last_compress():
     """
     if not os.path.exists(".lastcompress"):
         print("A .lastcompress file was not detected. Is this your first time using this program?")
-        print("All mp4 files in " + os.getcwd() + " will be compressed and OVERWRITTEN.")
+        print("All mp4 files in " + os.getcwd() +
+              " will be compressed and OVERWRITTEN.")
         print("Your CPU will likely be at 100% on all cores through the duration of this program.")
         while True:
             choice = input("Continue? [y/n] ")
@@ -172,7 +174,7 @@ def get_last_compress():
 
 
 # Gets the path of the video replays folder
-def get_video_path():
+def get_video_path() -> str:
     """
     Gets the path of the video replays folder and asks the user if it is not found.
 
@@ -190,7 +192,7 @@ def get_video_path():
     return path
 
 
-def main():
+def main() -> None:
     """
     Main function
 
@@ -219,6 +221,11 @@ def main():
                 fname_list.append(filename)
                 timestamp_list.append(int(timestamp))
 
+    if len(fname_list) > 0:
+        print("Found " + str(len(fname_list)) + " files to compress.")
+    else:
+        print("No files needed to be compressed.")
+
     # Compress files
     for i, (filename, timestamp) in enumerate(zip(fname_list, timestamp_list)):
         start_time = time.perf_counter()
@@ -227,7 +234,7 @@ def main():
 
         # Compress then modify creation, modify, and access date of file
         print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
-              end='', flush=True)
+              end="", flush=True)
         compress_rc = compress_file(filename)
 
         run_time = round(time.perf_counter() - start_time)
@@ -249,8 +256,6 @@ def main():
         print("Finished! " + str(len(fname_list) - files_failed) + " files were compressed in " +
               convert_sec_to_hhmmss(total_time) + "! You reclaimed " +
               bytes_to_readable(old_size_total - new_size_total) + " of disk space!")
-    else:
-        print("No files needed to be compressed.")
 
     input("Press [ENTER] to exit...")
 
