@@ -7,6 +7,8 @@
       <w>libx</w>
       <w>radeon</w>
       <w>vcodec</w>
+      <w>winfile</w>
+      <w>wintime</w>
     </words>
   </dictionary>
 </component>

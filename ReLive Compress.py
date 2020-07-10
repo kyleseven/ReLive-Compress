@@ -252,10 +252,14 @@ def main() -> None:
             files_failed += 1
 
     if len(fname_list) != 0:
+        avg_time_per_file = round(total_time / len(fname_list))
+        total_size_saved = old_size_total - new_size_total
+        percent_decrease = round((total_size_saved / old_size_total) * 100)
         update_last_compress(max(timestamp_list))
         print("Finished! " + str(len(fname_list) - files_failed) + " files were compressed in " +
-              convert_sec_to_hhmmss(total_time) + "! You reclaimed " +
-              bytes_to_readable(old_size_total - new_size_total) + " of disk space!")
+              convert_sec_to_hhmmss(total_time) + "! (" + convert_sec_to_hhmmss(avg_time_per_file) + " per file) You "
+              "reclaimed " + bytes_to_readable(total_size_saved) + " of disk space! (" + str(percent_decrease) +
+              "% decrease)")
 
     input("Press [ENTER] to exit...")
 
