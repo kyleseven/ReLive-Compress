@@ -19,7 +19,7 @@ def change_file_creation_time(filename: str, new_time: int) -> None:
     :param new_time: the timestamp to apply to the file
     :return:
     """
-    wintime = pywintypes.Time(new_time)
+    wintime = pywintypes.Time(new_time)  # pylint: disable=no-member
     winfile = win32file.CreateFile(
         filename, win32con.GENERIC_WRITE,
         win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
