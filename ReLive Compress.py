@@ -80,7 +80,7 @@ def compress_file(filename: str) -> int:
     """
     temp_output_fname = filename.rstrip(".mp4") + "_temp_out.mp4"
 
-    result = subprocess.run(["ffmpeg", "-i", filename, "-vcodec", "libx264", "-map", "0", "-metadata",
+    result = subprocess.run(["ffmpeg", "-i", filename, "-c:v", "libx264", "-crf", "25", "-map", "0", "-metadata",
                              "creation_time=\"\"", temp_output_fname], capture_output=True)
 
     if result.returncode != 0:
