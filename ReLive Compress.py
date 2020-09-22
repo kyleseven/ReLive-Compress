@@ -146,8 +146,7 @@ def get_last_compress() -> int:
     """
     if not os.path.exists(".lastcompress"):
         print("A .lastcompress file was not detected. Is this your first time using this program?")
-        print("All mp4 files in " + os.getcwd() +
-              " will be compressed and OVERWRITTEN.")
+        print(f"All mp4 files in {os.getcwd()} will be compressed and OVERWRITTEN.")
         print("Your CPU will likely be at 100% on all cores through the duration of this program.")
         while True:
             choice = input("Continue? [y/n] ")
@@ -222,7 +221,7 @@ def main() -> None:
                 timestamp_list.append(int(timestamp))
 
     if len(fname_list) > 0:
-        print("Found " + str(len(fname_list)) + " files to compress.")
+        print(f"Found {len(fname_list)} files to compress.")
     else:
         print("No files needed to be compressed.")
 
@@ -233,8 +232,7 @@ def main() -> None:
         old_size_total += old_size
 
         # Compress then modify creation, modify, and access date of file
-        print("Compressing " + str(i + 1) + " out of " + str(len(fname_list)) + ": " + filename + "... ",
-              end="", flush=True)
+        print(f"Compressing {i+1} out of {len(fname_list)}: {filename}... ", end="", flush=True)
         compress_rc = compress_file(filename)
 
         run_time = round(time.perf_counter() - start_time)
@@ -245,10 +243,10 @@ def main() -> None:
         if compress_rc == 0:
             change_file_creation_time(filename, timestamp)
             os.utime(filename, (timestamp, timestamp))
-            print("Success! (took " + convert_sec_to_hhmmss(run_time) + ") (" + bytes_to_readable(old_size) + " -> " +
-                  bytes_to_readable(new_size) + ")", flush=True)
+            print(f"Success! (took {convert_sec_to_hhmmss(run_time)}) ({bytes_to_readable(old_size)} -> "
+                  f"{bytes_to_readable(new_size)})", flush=True)
         else:
-            print("Failed. (ffmpeg returned " + str(compress_rc) + ")", flush=True)
+            print(f"Failed. (ffmpeg returned {compress_rc})", flush=True)
             files_failed += 1
 
     if len(fname_list) != 0:
@@ -256,10 +254,9 @@ def main() -> None:
         total_size_saved = old_size_total - new_size_total
         percent_decrease = round((total_size_saved / old_size_total) * 100)
         update_last_compress(max(timestamp_list))
-        print("Finished! " + str(len(fname_list) - files_failed) + " files were compressed in " +
-              convert_sec_to_hhmmss(total_time) + "! (" + convert_sec_to_hhmmss(avg_time_per_file) + " per file) You "
-              "reclaimed " + bytes_to_readable(total_size_saved) + " of disk space! (" + str(percent_decrease) +
-              "% decrease)")
+        print(f"Finished! {len(fname_list) - files_failed} files were compressed in "
+              f"{convert_sec_to_hhmmss(total_time)}! ({convert_sec_to_hhmmss(avg_time_per_file)} per file) You "
+              f"reclaimed {bytes_to_readable(total_size_saved)} of disk space! ({percent_decrease}% decrease)")
 
     input("Press [ENTER] to exit...")
 
